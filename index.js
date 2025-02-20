@@ -14,5 +14,5 @@ app.use("/api/prestamos", require("./routes/prestamoRoutes"));
 // Puerto
 const PORT = 9099;
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en puerto: ${PORT}`);
+    console.log(` Servidor corriendo en puerto: ${PORT}`);
 });
