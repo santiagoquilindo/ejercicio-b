@@ -1,22 +1,31 @@
-const Libro = require('../models/libro');
+const db = require("../config/database");
 
-exports.obtenerLibros = async (req, res) => {
-    const [libros] = await Libro.obtenerLibros();
-    res.json(libros);
-};
+class LibroController {
+    static async listarLibros(req, res) {
+        let [libros] = await db.query("SELECT * FROM libros");
+        res.json(libros);
+    }
 
-exports.agregarLibro = async (req, res) => {
-    await Libro.agregarLibro(req.body);
-    res.json({ mensaje: "Libro agregado correctamente." });
-};
+    static async agregarLibro(req, res) {
+        let { titulo, autor, ano_publicacion, disponible } = req.body;
+        await db.query("INSERT INTO libros (titulo, autor, ano_publicacion, disponible) VALUES (?, ?, ?, ?)", 
+                        [titulo, autor, ano_publicacion, disponible ?? true]);
+        res.json({ mensaje: "Libro agregado correctamente." });
+    }
 
-exports.actualizarLibro = async (req, res) => {
-    await Libro.actualizarLibro(req.params.id, req.body);
-    res.json({ mensaje: "Libro actualizado correctamente." });
-};
+    static async actualizarLibro(req, res) {
+        let { id } = req.params;
+        let { titulo, autor, ano_publicacion, disponible } = req.body;
+        await db.query("UPDATE libros SET titulo = ?, autor = ?, ano_publicacion = ?, disponible = ? WHERE id = ?", 
+                        [titulo, autor, ano_publicacion, disponible, id]);
+        res.json({ mensaje: "Libro actualizado correctamente." });
+    }
 
-// Eliminar un libro
-exports.eliminarLibro = async (req, res) => {
-    await Libro.eliminarLibro(req.params.id);
-    res.json({ mensaje: "Libro eliminado correctamente." });
-};
+    static async eliminarLibro(req, res) {
+        let { id } = req.params;
+        await db.query("DELETE FROM libros WHERE id = ?", [id]);
+        res.json({ mensaje: "Libro eliminado correctamente." });
+    }
+}
+
+module.exports = LibroController;
